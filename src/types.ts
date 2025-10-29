@@ -26,7 +26,7 @@ export type Word = {
 }
 
 export type Reading = {
+  reading: string;
   main_kanji: string[];
   name_kanji: string[];
-  reading: string;
 }
