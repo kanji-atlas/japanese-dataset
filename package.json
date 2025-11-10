@@ -1,6 +1,7 @@
 {
   "scripts" : {
-    "dev": "bun src/index.ts"
+    "build": "bun src/index.ts",
+    "get-data": "bun src/retrieve.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.44.6"

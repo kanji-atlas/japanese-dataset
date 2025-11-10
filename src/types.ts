@@ -1,9 +1,9 @@
 
 export type Kanji = {
-  freq_mainichi_shinbun: number | null;
-  grade: number | null;
-  heisig_en: string | null;
-  jlpt: number | null;
+  freq_mainichi_shinbun: number | undefined;
+  grade: number | undefined;
+  heisig_en: string | undefined;
+  jlpt: number | undefined;
   kanji: string;
   kun_readings: string[];
   meanings: string[];
