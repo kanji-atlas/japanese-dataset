@@ -1,5 +1,3 @@
-import type { Kanji, Word, Reading } from "./types"
-
 const pathKanjiApiFull = './local-data/kanjiapi_full.json';
 const pathKanjiExtended = './local-data/kanji_extended.json'
 const pathKanjiMain = './local-data/kanji_main.json'
@@ -12,9 +10,35 @@ const pathTranslationEn = './dataset/translation/en/'
 
 const doJob = async () => {
   const contentKanjiApi: {
-    kanjis: Record<string, Kanji>,
-    words: Record<string, Word[]>,
-    readings: Record<string, Reading>
+    kanjis: Record<string, {
+      freq_mainichi_shinbun: number | undefined;
+      grade: number | undefined;
+      heisig_en: string | undefined;
+      jlpt: number | undefined;
+      kanji: string;
+      kun_readings: string[];
+      meanings: string[];
+      name_readings: string[];
+      notes: string[];
+      on_readings: string[];
+      stroke_count: number;
+      unicode: string;
+    }>,
+    words: Record<string, {
+      meanings: {
+        glosses: string[];
+      }[];
+      variants: {
+        priorities: string[];
+        pronounced: string;
+        written: string;
+      }[];
+    }[]>,
+    readings: Record<string, {
+      reading: string;
+      main_kanji: string[];
+      name_kanji: string[];
+    }>
   } = await Bun.file(pathKanjiApiFull).json();
 
   const contentKanjiExtended: Record<string, any[]> = await Bun.file(pathKanjiExtended).json()
@@ -39,7 +63,7 @@ const doJob = async () => {
     jlpt?: number,
     mainichi_shinbun?: number,
     related_words: string[],
-    components: string[],
+    radicals: string[],
     main_on_reading: string,
     main_kun_reading: string,
     on_readings: string[],
@@ -82,7 +106,7 @@ const doJob = async () => {
         jlpt: k.jlpt,
         mainichi_shinbun: k.freq_mainichi_shinbun,
         related_words: kext[9],
-        components: kext[0],
+        radicals: kext[0],
         main_on_reading: kmain[1],
         main_kun_reading: kmain[2],
         on_readings: kext[6],
@@ -103,7 +127,7 @@ const doJob = async () => {
       jlpt: k.jlpt,
       mainichi_shinbun: k.freq_mainichi_shinbun,
       related_words: [],
-      components: [],
+      radicals: [],
       main_on_reading: k.on_readings[0],
       main_kun_reading: k.kun_readings[0],
       on_readings: k.on_readings,
@@ -118,7 +142,6 @@ const doJob = async () => {
     }
   })
 
-  // console.log(JSON.stringify(contents.words.恋))
   console.log(Object.entries(contentKanjiApi.kanjis).length)
   let wordID = 0
   Object.entries(contentKanjiApi.words).forEach(([k, kanjiWords]) => {
@@ -142,6 +165,9 @@ const doJob = async () => {
         }
         const translations = w.meanings.flatMap(m => m.glosses)
         if (translations.length > 0) {
+          if (translations[0].includes("kanji")) {
+            console.log(translations)
+          }
           wordsT[written] = {
             main_meaning: translations[0],
             meanings: translations
@@ -158,7 +184,7 @@ const doJob = async () => {
   await kanjiTranslation.write(JSON.stringify(kanjiT))
   await wordsTranslation.write(JSON.stringify(wordsT))
   await kanjiComponentTranslation.write(JSON.stringify(contentComponent))
-  // console.log(Object.values(baseW).length, Object.values(wordsT).length)
+  console.log(Object.values(baseW).length, Object.values(wordsT).length)
 }
 
 doJob()

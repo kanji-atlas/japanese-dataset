@@ -44,7 +44,7 @@ export const words = sqliteTable("word", {
 
 export const wordTranslations = sqliteTable("word_translation", {
   id: integer().primaryKey({ autoIncrement: true }),
-  wordId: integer().notNull().references(() => words.id),
+  associatedKanji: text().notNull().references(() => kanjis.kanji),
   language: text().notNull(),
   glosses: text({ mode: "json" }).$type<string[]>().default([]),
   autoTranslated: integer({ mode: "boolean" }).default(false)
